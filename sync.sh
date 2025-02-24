@@ -18,6 +18,6 @@ mkdir -p "$BACK_DIR"
 
 # Sync files from the source to the destination
 echo "Starting rclone sync from $RCLONE_REMOTE to $DEST_DIR..."
-rclone sync "$RCLONE_REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_FILE --log-level=INFO --progress --tpslimit 10
+rclone sync "$RCLONE_REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_FILE --log-level=INFO --progress --fast-list --tpslimit 10
 
 echo "Rclone sync operation is complete."
