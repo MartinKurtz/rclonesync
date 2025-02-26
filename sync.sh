@@ -50,9 +50,9 @@ else
 
     # Check if the mount was successful
     if ! mount | grep "$MOUNT_POINT" > /dev/null; then
-    echo "Failed to mount remote storage. Exiting."
-    kill $MOUNT_PID
-    exit 1
+        echo "Failed to mount remote storage. Exiting."
+        kill $MOUNT_PID
+        exit 1
     fi
 
     # Run rsync to sync files from the mounted remote to the destination
@@ -61,8 +61,8 @@ else
     # Unmount the remote storage
     fusermount -u "$MOUNT_POINT"
     if [ $? -eq 0 ]; then
-    echo "Successfully unmounted the remote storage."
+        echo "Successfully unmounted the remote storage."
     else
-    echo "Failed to unmount the remote storage."
+        echo "Failed to unmount the remote storage."
     fi
 fi
