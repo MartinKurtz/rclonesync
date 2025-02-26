@@ -1,5 +1,6 @@
 #!/bin/bash
 TPSLIM=5
+BWLIM=1000
 # Get the directory of the script
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
@@ -24,8 +25,39 @@ mkdir -p "$DEST_DIR"
 mkdir -p "$BACK_DIR"
 mkdir -p "$LOG_DIR"
 
+#RCLONE VARIANT
 # Sync files from the source to the destination
-echo "Starting rclone sync from $RCLONE_REMOTE to $DEST_DIR..."
-rclone sync "$RCLONE_REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log --log-level=INFO --progress --fast-list --tpslimit $TPSLIM --transfers 1 --checkers 1 --no-traverse --timeout 5s --retries 1
+#echo "Starting rclone sync from $RCLONE_REMOTE to $DEST_DIR..."
+#rclone sync "$RCLONE_REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log --log-level=INFO --progress --tpslimit $TPSLIM --bwlimit $BWLIM --transfers 1 --checkers 1 --timeout 30s --retries 3
+#echo "Rclone sync operation is complete."
 
-echo "Rclone sync operation is complete."
+
+
+#RSYNC ALTERNATIVE
+MOUNT_POINT="$SCRIPT_DIR/source"
+mkdir -p "$MOUNT_POINT"
+# Mount the remote storage
+rclone mount "$RCLONE_REMOTE:" "$MOUNT_POINT" --vfs-cache-mode writes --allow-other --log-file="$LOG_DIR/$(date +%Y-%m-%d_%H-%M)_mount.log" --log-level INFO --bwlimit $BWLIM &
+MOUNT_PID=$!
+
+# Wait for the mount to complete (you can adjust the sleep duration)
+sleep 5
+
+# Check if the mount was successful
+if ! mount | grep "$MOUNT_POINT" > /dev/null; then
+  echo "Failed to mount remote storage. Exiting."
+  kill $MOUNT_PID
+  exit 1
+fi
+
+# Run rsync to sync files from the mounted remote to the destination
+rsync -av --progress --timeout=30 --bwlimit $BWLIM --delete --backup --backup-dir="$BACK_DIR" --log-file="$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log" "$MOUNT_POINT/" "$DEST_DIR/"
+
+# Unmount the remote storage
+fusermount -u "$MOUNT_POINT"
+if [ $? -eq 0 ]; then
+  echo "Successfully unmounted the remote storage."
+else
+  echo "Failed to unmount the remote storage."
+fi
+
