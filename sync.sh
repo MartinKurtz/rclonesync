@@ -1,10 +1,10 @@
 #!/bin/bash
-TPSLIM=10
+TPSLIM=5
 # Get the directory of the script
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 # Use the first argument as the rclone remote, or fall back to the default
-RCLONE_REMOTE="ftp.dbit.com"
+RCLONE_REMOTE=""
 
 # Define source and destination paths
 MIRROR_DIR="$SCRIPT_DIR/_mirror"
@@ -26,6 +26,6 @@ mkdir -p "$LOG_DIR"
 
 # Sync files from the source to the destination
 echo "Starting rclone sync from $RCLONE_REMOTE to $DEST_DIR..."
-rclone sync "$RCLONE_REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log --log-level=INFO --progress --fast-list --tpslimit $TPSLIM
+rclone sync "$RCLONE_REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log --log-level=INFO --progress --fast-list --tpslimit $TPSLIM --transfers 1 --checkers 1 --no-traverse --timeout 5s --retries 1
 
 echo "Rclone sync operation is complete."
