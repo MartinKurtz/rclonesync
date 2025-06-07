@@ -14,7 +14,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 # Use the first argument as the rclone remote, or fall back to the default
 REMOTE="https://github.com/MartinKurtz/syncer_scripts.git"
 REMOTE_NAME="MartinKurtz_syncer_scripts.git"
-if [ "$REMOTE_TYPE" -eq "rclone" ]; then
+if [ "$REMOTE_TYPE" == "rclone" ]; then
     REMOTE_NAME=$REMOTE
 fi
 
@@ -38,7 +38,7 @@ mkdir -p "$BACK_DIR"
 mkdir -p "$LOG_DIR"
 mkdir -p "$MOUNT_POINT"
 
-if [ "$REMOTE_TYPE" -eq "git" ]; then
+if [ "$REMOTE_TYPE" == "git" ]; then
     cd $MOUNT_POINT
     git clone $REMOTE
     cd $SCRIPT_DIR
@@ -49,7 +49,7 @@ fi
 
 
 
-if [ "$REMOTE_TYPE" -eq "rclone" ]; then
+if [ "$REMOTE_TYPE" == "rclone" ]; then
     if [ "$USE_RSYNC" -eq 0 ]; then
         #RCLONE VARIANT
         #Sync files from the source to the destination
