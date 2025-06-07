@@ -43,7 +43,7 @@ if [ "$REMOTE_TYPE" == "git" ]; then
     git clone $REMOTE
     cd $SCRIPT_DIR
     rsync -av --progress --delete --backup --backup-dir="$BACK_DIR" --log-file="$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log" "$MOUNT_POINT/" "$DEST_DIR/"
-    rm -rf MOUNT_POINT
+    rm -rf $MOUNT_POINT
 
 fi
 
