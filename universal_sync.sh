@@ -38,6 +38,17 @@ mkdir -p "$BACK_DIR"
 mkdir -p "$LOG_DIR"
 mkdir -p "$MOUNT_POINT"
 
+
+if [ "$REMOTE_TYPE" == "svn" ]; then
+    cd $MOUNT_POINT
+    svn checkout $REMOTE
+    cd $SCRIPT_DIR
+    rsync -av --progress --delete --backup --backup-dir="$BACK_DIR" --log-file="$LOG_DIR/$(date +%Y-%m-%d_%H-%M).log" "$MOUNT_POINT/" "$DEST_DIR/"
+    rm -rf $MOUNT_POINT
+
+fi
+
+
 if [ "$REMOTE_TYPE" == "git" ]; then
     cd $MOUNT_POINT
     git clone $REMOTE
