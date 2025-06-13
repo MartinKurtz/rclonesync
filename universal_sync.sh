@@ -44,7 +44,7 @@ if [ "$REMOTE_TYPE" == "svn" ]; then
     cd $MOUNT_POINT
     svn checkout $REMOTE
     cd $SCRIPT_DIR
-    rsync -av --progress --delete --backup --backup-dir="$BACK_DIR" --log-file=$LOG_FILE "$MOUNT_POINT/" "$DEST_DIR/"
+    rsync -av --progress --delete --backup --backup-dir="$BACK_DIR" --log-file="$LOG_FILE" "$MOUNT_POINT/" "$DEST_DIR/"
     rm -rf $MOUNT_POINT
 
 fi
@@ -54,7 +54,7 @@ if [ "$REMOTE_TYPE" == "git" ]; then
     cd $MOUNT_POINT
     git clone $REMOTE
     cd $SCRIPT_DIR
-    rsync -av --progress --delete --backup --backup-dir="$BACK_DIR" --log-file=$LOG_FILE "$MOUNT_POINT/" "$DEST_DIR/"
+    rsync -av --progress --delete --backup --backup-dir="$BACK_DIR" --log-file="$LOG_FILE" "$MOUNT_POINT/" "$DEST_DIR/"
     rm -rf $MOUNT_POINT
 
 fi
@@ -66,7 +66,7 @@ if [ "$REMOTE_TYPE" == "rclone" ]; then
         #RCLONE VARIANT
         #Sync files from the source to the destination
         echo "Starting rclone sync from $REMOTE to $DEST_DIR..."
-        rclone sync "$REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file=$LOG_FILE --log-level=INFO --progress --tpslimit $TPSLIM --bwlimit $BWLIM --transfers 1 --checkers 1 --timeout 30s --retries 3
+        rclone sync "$REMOTE:/" "$DEST_DIR" --backup-dir="$BACK_DIR" --log-file="$LOG_FILE" --log-level=INFO --progress --tpslimit $TPSLIM --bwlimit $BWLIM --transfers 1 --checkers 1 --timeout 30s --retries 3
         echo "Rclone sync operation is complete."
 
     else
@@ -77,7 +77,7 @@ if [ "$REMOTE_TYPE" == "rclone" ]; then
 
         mkdir -p "$MOUNT_POINT"
         # Mount the remote storage
-        rclone mount "$REMOTE:" "$MOUNT_POINT" --vfs-cache-mode writes --allow-other --log-file=$LOG_FILE --log-level INFO --bwlimit $BWLIM &
+        rclone mount "$REMOTE:" "$MOUNT_POINT" --vfs-cache-mode writes --allow-other --log-file="$LOG_FILE" --log-level INFO --bwlimit $BWLIM &
         MOUNT_PID=$!
 
         # Wait for the mount to complete (you can adjust the sleep duration)
@@ -91,7 +91,7 @@ if [ "$REMOTE_TYPE" == "rclone" ]; then
         fi
 
         # Run rsync to sync files from the mounted remote to the destination
-        rsync -av --progress --timeout=30 --bwlimit $BWLIM --delete --backup --backup-dir="$BACK_DIR" --log-file=$LOG_FILE "$MOUNT_POINT/" "$DEST_DIR/"
+        rsync -av --progress --timeout=30 --bwlimit $BWLIM --delete --backup --backup-dir="$BACK_DIR" --log-file="$LOG_FILE" "$MOUNT_POINT/" "$DEST_DIR/"
 
         # Unmount the remote storage
         fusermount -u "$MOUNT_POINT"
